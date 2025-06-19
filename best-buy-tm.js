@@ -116,7 +116,7 @@ const MAX_RETRIES = "500"; // Fossil of EARTH
 function playChime() {
     // You can choose any online sound file.
     const chimeUrl =
-        "https://github.com/kkapuria3/BestBuy-GPU-Bot/blob/dev-v2.5-mem_leak_fix/resources/alert.mp3?raw=true";
+        "https://github.com/ImaBeRicheyyRichhh/BestBuy-GottaCatchEmAll-Bot/raw/main/resources/alert.mp3";
     const audio = new Audio(chimeUrl);
     audio.play().catch((err) => console.error("Audio play failed:", err));
 }
@@ -199,7 +199,7 @@ let checkQueueTimeRemaining = () => {
 //________________________________________________________________________
 
 function createFloatingBadge(mode, status) {
-    const iconUrl = "https://kkapuria3.github.io/images/KK.png";
+    const iconUrl = "https://github.com/ImaBeRicheyyRichhh/BestBuy-GottaCatchEmAll-Bot/blob/main/resources/gengar.png?raw=true";
     const $container = document.createElement("div");
     const $bg = document.createElement("div");
     const $link = document.createElement("a");
