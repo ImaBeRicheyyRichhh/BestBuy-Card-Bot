@@ -1,9 +1,9 @@
 {
-    "name": "Open Source Bots - BestBuy Bot",
-    "short_name": "BB-Bot",
+    "name": "Open Source Bots - BestBuy GottaCatchEmAll Bot",
+    "short_name": "BB-GottaCatchEmAll-Bot",
     "description": "Github Page as a Progressive Web App",
-    "scope": "/BestBuy-GPU-Bot/",
-    "start_url": "/BestBuy-GPU-Bot/",
+    "scope": "/BestBuy-GottaCatchEmAll-Bot/",
+    "start_url": "/BestBuy-GottaCatchEmAll-Bot/",
     "background_color": "#ffffff",
     "theme_color": "#ffffff",
     "display": "standalone"
