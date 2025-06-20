@@ -10,7 +10,7 @@ Cuz we gotta catch em all!!!
 
 ### Dependencies
 
-1. Install [Tampermonkey Extention](https://www.tampermonkey.net/) for Chrome or [Userscripts](https://apps.apple.com/us/app/userscripts/id1463298887) for IOS
+1. Install [Tampermonkey Extension](https://www.tampermonkey.net/) for Chrome or [Userscripts](https://apps.apple.com/us/app/userscripts/id1463298887) for IOS
 2. BestBuy Account (Please be signed in) 
 3. Please allow [Pop-Ups](https://www.isc.upenn.edu/how-to/configuring-your-web-browser-allow-pop-windows) for ```https://www.bestbuy.com/``` in your browser
 
