@@ -17,14 +17,12 @@ Cuz we gotta catch em all!!!
 
 ### Installing
 
-* Go to tampermonkey dashboard from browser extension and create a new script
-* Copy the full code from [best-buy-tm.js](https://raw.githubusercontent.com/ImaBeRicheyyRichhh/BestBuy-GottaCatchEmAll-Bot/main/best-buy-tm.js)
-* Paste the full code into the script replacing whatever was there initially
-* [Optional step) Update REQUIRED FLAGS in the code for your information such as the item keyword, your last 4 phone digits, etc
-* Save the script
-* Go to https://www.bestbuy.com and click the tampermonkey extension, make sure script is enabled
+* Go to https://greasyfork.org/en/scripts/540069-bestbuy-gottacatchemall-bot and click the green "Install this script" button
+* Follow the on screen instructions to install
+* [Optional step) Update REQUIRED FLAGS in the code for your information such as the item keyword, your last 4 phone digits, etc. Then save the script.
+* Go to https://www.bestbuy.com and click the tampermonkey extension, make sure script "BestBuy-GottaCatchEmAll-Bot" is enabled
 * Login to BestBuy user account, have an address saved from a previous purchase or cart checkout step
-* Go to https://www.bestbuy.com/site/ultra-pro-poke-ball-premium-9-pocket-pro-binder-for-pokemon/6570314.p?skuId=6570314 and bot will add to cart and checkout!
+* Go to https://www.bestbuy.com/site/ultra-pro-poke-ball-premium-9-pocket-pro-binder-for-pokemon/6570314.p?skuId=6570314 and bot will add to cart and checkout! Magic!
 
 
 ### Further Details
