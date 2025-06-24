@@ -3,7 +3,7 @@
 // @include  https://www.bestbuy.com/*
 // @updateURL  https://raw.githubusercontent.com/ImaBeRicheyyRichhh/BestBuy-GottaCatchEmAll-Bot/main/best-buy-tm.js
 // @downloadURL https://raw.githubusercontent.com/ImaBeRicheyyRichhh/BestBuy-GottaCatchEmAll-Bot/main/best-buy-tm.js
-// @version      4.5
+// @version      4.6
 // @description  Best Buy - Gotta Catch Em All - Bot - ImaBeRicheyyRichhh Edition
 // @author       ImaBeRicheyyRichhh
 // @grant        window.close
@@ -63,6 +63,7 @@
 // - Standardized color detection for button states
 // - Reduced code duplication across event handlers
 // - Added better logging for button state changes
+// 4.6 Added options menu for bestbuy.com
 */
 
 // ==/UserScript==
@@ -91,11 +92,32 @@
 
 //____ REQUIRED FLAGS ____________________________________________________
 
-const ITEM_KEYWORD = "Ultra"; // NO SPACES IN KEYWORD - ONLY ONE WORD
-const CREDITCARD_CVV = "420"; // BOT will run without changing this value.
-const TESTMODE = "Yes"; // TESTMODE = "No" will buy the card
-const SMS_DIGITS = "5461"; // Enter last 4 digits of phone # for SMS verification (required for verification)
-const PREFERRED_SHIPPING = "Yes"; // "Yes" will select shipping option if available
+// Default values for the required flags
+const DEFAULT_CONFIG = {
+    ITEM_KEYWORD: "", // NO SPACES IN KEYWORD - ONLY ONE WORD
+    CREDITCARD_CVV: "420", // BOT will run without changing this value.
+    TESTMODE: "Yes", // TESTMODE = "No" will buy the card
+    SMS_DIGITS: "", // Enter last 4 digits of phone # for SMS verification (required for verification)
+    PREFERRED_SHIPPING: "Yes" // "Yes" will select shipping option if available
+};
+
+// Function to get configuration values from localStorage or use defaults
+function getConfigValue(key) {
+    const stored = localStorage.getItem(`bestbuy_bot_${key}`);
+    return stored !== null ? stored : DEFAULT_CONFIG[key];
+}
+
+// Function to save configuration values to localStorage
+function saveConfigValue(key, value) {
+    localStorage.setItem(`bestbuy_bot_${key}`, value);
+}
+
+// Get current configuration values
+let ITEM_KEYWORD = getConfigValue('ITEM_KEYWORD');
+let CREDITCARD_CVV = getConfigValue('CREDITCARD_CVV');
+let TESTMODE = getConfigValue('TESTMODE');
+let SMS_DIGITS = getConfigValue('SMS_DIGITS');
+let PREFERRED_SHIPPING = getConfigValue('PREFERRED_SHIPPING');
 
 //____ PLEASE WAIT FLAGS : ADVANCED OPTIONS _____________________________
 
@@ -964,3 +986,413 @@ if (
 window.addEventListener("beforeunload", () => {
     eventManager.clearAll();
 });
+
+// Configuration Form Functions
+function createConfigForm() {
+    // Check if form already exists
+    if (document.getElementById('bestbuy-config-form')) {
+        return;
+    }
+
+    const formContainer = document.createElement('div');
+    formContainer.id = 'bestbuy-config-form';
+    formContainer.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: #1a1a1a;
+        border: 2px solid #333;
+        border-radius: 10px;
+        padding: 20px;
+        z-index: 10000;
+        color: white;
+        font-family: Arial, sans-serif;
+        min-width: 400px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.8);
+    `;
+
+    const title = document.createElement('h2');
+    title.textContent = 'BestBuy Bot Configuration';
+    title.style.cssText = 'margin: 0 0 20px 0; color: #00ff00; text-align: center;';
+
+    const form = document.createElement('form');
+    form.style.cssText = 'display: flex; flex-direction: column; gap: 15px;';
+
+    // Create form fields
+    const fields = [
+        {
+            name: 'ITEM_KEYWORD',
+            label: 'Item Keyword (NO SPACES)',
+            type: 'text',
+            placeholder: 'e.g., Ultra, RTX, PS5',
+            description: 'Single word to search for in product titles'
+        },
+        {
+            name: 'CREDITCARD_CVV',
+            label: 'Credit Card CVV',
+            type: 'text',
+            placeholder: 'e.g., 420',
+            description: 'CVV code for your saved payment method'
+        },
+        {
+            name: 'TESTMODE',
+            label: 'Test Mode',
+            type: 'select',
+            options: [
+                { value: 'Yes', label: 'Yes (Safe Mode)' },
+                { value: 'No', label: 'No (Will Actually Buy)' }
+            ],
+            description: 'Set to "No" to actually purchase items'
+        },
+        {
+            name: 'SMS_DIGITS',
+            label: 'SMS Verification Digits',
+            type: 'text',
+            placeholder: 'e.g., 5461',
+            description: 'Last 4 digits of your phone number for SMS verification'
+        },
+        {
+            name: 'PREFERRED_SHIPPING',
+            label: 'Preferred Shipping',
+            type: 'select',
+            options: [
+                { value: 'Yes', label: 'Yes' },
+                { value: 'No', label: 'No' }
+            ],
+            description: 'Select shipping option if available'
+        }
+    ];
+
+    fields.forEach(field => {
+        const fieldContainer = document.createElement('div');
+        fieldContainer.style.cssText = 'display: flex; flex-direction: column; gap: 5px;';
+
+        const label = document.createElement('label');
+        label.textContent = field.label;
+        label.style.cssText = 'font-weight: bold; color: #00ff00;';
+
+        const description = document.createElement('small');
+        description.textContent = field.description;
+        description.style.cssText = 'color: #ccc; font-size: 12px;';
+
+        let input;
+        if (field.type === 'select') {
+            input = document.createElement('select');
+            field.options.forEach(option => {
+                const opt = document.createElement('option');
+                opt.value = option.value;
+                opt.textContent = option.label;
+                input.appendChild(opt);
+            });
+        } else {
+            input = document.createElement('input');
+            input.type = field.type;
+            input.placeholder = field.placeholder;
+        }
+
+        input.style.cssText = `
+            padding: 8px;
+            border: 1px solid #333;
+            border-radius: 4px;
+            background: #2a2a2a;
+            color: white;
+            font-size: 14px;
+        `;
+
+        // Set current value
+        const currentValue = getConfigValue(field.name);
+        if (field.type === 'select') {
+            input.value = currentValue;
+        } else {
+            input.value = currentValue;
+        }
+
+        fieldContainer.appendChild(label);
+        fieldContainer.appendChild(description);
+        fieldContainer.appendChild(input);
+        form.appendChild(fieldContainer);
+    });
+
+    // Buttons container
+    const buttonContainer = document.createElement('div');
+    buttonContainer.style.cssText = 'display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap;';
+
+    const saveButton = document.createElement('button');
+    saveButton.textContent = 'Save Configuration';
+    saveButton.type = 'submit';
+    saveButton.style.cssText = `
+        flex: 1;
+        padding: 10px;
+        background: #00ff00;
+        color: black;
+        border: none;
+        border-radius: 4px;
+        font-weight: bold;
+        cursor: pointer;
+        min-width: 120px;
+    `;
+
+    const cancelButton = document.createElement('button');
+    cancelButton.textContent = 'Cancel';
+    cancelButton.type = 'button';
+    cancelButton.style.cssText = `
+        flex: 1;
+        padding: 10px;
+        background: #ff4444;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-weight: bold;
+        cursor: pointer;
+        min-width: 120px;
+    `;
+
+    const exportButton = document.createElement('button');
+    exportButton.textContent = 'Export Config';
+    exportButton.type = 'button';
+    exportButton.style.cssText = `
+        flex: 1;
+        padding: 10px;
+        background: #0066ff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-weight: bold;
+        cursor: pointer;
+        min-width: 120px;
+    `;
+
+    const clearButton = document.createElement('button');
+    clearButton.textContent = 'Clear Config';
+    clearButton.type = 'button';
+    clearButton.style.cssText = `
+        flex: 1;
+        padding: 10px;
+        background: #ff8800;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-weight: bold;
+        cursor: pointer;
+        min-width: 120px;
+    `;
+
+    // Import file input (hidden)
+    const importInput = document.createElement('input');
+    importInput.type = 'file';
+    importInput.accept = '.json';
+    importInput.style.display = 'none';
+    importInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            importConfiguration(e.target.files[0]);
+        }
+    });
+
+    const importButton = document.createElement('button');
+    importButton.textContent = 'Import Config';
+    importButton.type = 'button';
+    importButton.style.cssText = `
+        flex: 1;
+        padding: 10px;
+        background: #8800ff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-weight: bold;
+        cursor: pointer;
+        min-width: 120px;
+    `;
+    importButton.addEventListener('click', () => {
+        importInput.click();
+    });
+
+    buttonContainer.appendChild(saveButton);
+    buttonContainer.appendChild(cancelButton);
+    buttonContainer.appendChild(exportButton);
+    buttonContainer.appendChild(importButton);
+    buttonContainer.appendChild(clearButton);
+    form.appendChild(buttonContainer);
+    form.appendChild(importInput);
+
+    // Button event handlers
+    exportButton.addEventListener('click', exportConfiguration);
+    clearButton.addEventListener('click', () => {
+        if (confirm('Are you sure you want to clear all configuration? This will reset to default values.')) {
+            clearConfiguration();
+            document.body.removeChild(formContainer);
+        }
+    });
+
+    // Form submission handler
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        // Get all form inputs and map them to configuration keys
+        const inputs = form.querySelectorAll('input, select');
+        
+        inputs.forEach((input, index) => {
+            const field = fields[index];
+            if (field && field.name) {
+                saveConfigValue(field.name, input.value);
+            }
+        });
+
+        // Update current values
+        ITEM_KEYWORD = getConfigValue('ITEM_KEYWORD');
+        CREDITCARD_CVV = getConfigValue('CREDITCARD_CVV');
+        TESTMODE = getConfigValue('TESTMODE');
+        SMS_DIGITS = getConfigValue('SMS_DIGITS');
+        PREFERRED_SHIPPING = getConfigValue('PREFERRED_SHIPPING');
+
+        // Close form
+        document.body.removeChild(formContainer);
+        
+        // Show success message
+        showNotification('Configuration saved successfully!', 'success');
+        
+        // Reload page to apply new settings
+        setTimeout(() => {
+            window.location.reload();
+        }, 1500);
+    });
+
+    // Cancel button handler
+    cancelButton.addEventListener('click', () => {
+        document.body.removeChild(formContainer);
+    });
+
+    formContainer.appendChild(title);
+    formContainer.appendChild(form);
+    document.body.appendChild(formContainer);
+}
+
+// Function to show notifications
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.textContent = message;
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 20px;
+        border-radius: 5px;
+        color: white;
+        font-weight: bold;
+        z-index: 10001;
+        background: ${type === 'success' ? '#00ff00' : type === 'error' ? '#ff4444' : '#0066ff'};
+        color: ${type === 'success' ? 'black' : 'white'};
+        box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    `;
+
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+        if (notification.parentNode) {
+            document.body.removeChild(notification);
+        }
+    }, 3000);
+}
+
+// Function to check if configuration is needed
+function checkConfiguration() {
+    const hasConfig = localStorage.getItem('bestbuy_bot_ITEM_KEYWORD') !== null;
+    console.log('checking configuration');
+    if (!hasConfig) {
+        // Show configuration form on first run
+        setTimeout(() => {
+            createConfigForm();
+        }, 1000);
+    }
+}
+
+// Add configuration button to the page
+function addConfigButton() {
+    const configButton = document.createElement('button');
+    configButton.textContent = '⚙️ Bot Config';
+    configButton.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 10px 15px;
+        background: #333;
+        color: white;
+        border: 1px solid #666;
+        border-radius: 5px;
+        cursor: pointer;
+        z-index: 9999;
+        font-size: 14px;
+    `;
+
+    configButton.addEventListener('click', createConfigForm);
+    document.body.appendChild(configButton);
+
+    // Add a small indicator showing current keyword
+    const indicator = document.createElement('div');
+    indicator.textContent = `Keyword: ${ITEM_KEYWORD}`;
+    indicator.style.cssText = `
+        position: fixed;
+        top: 60px;
+        right: 20px;
+        padding: 5px 10px;
+        background: #1a1a1a;
+        color: #00ff00;
+        border: 1px solid #333;
+        border-radius: 3px;
+        font-size: 12px;
+        z-index: 9999;
+    `;
+    document.body.appendChild(indicator);
+}
+
+// Function to clear all configuration
+function clearConfiguration() {
+    Object.keys(DEFAULT_CONFIG).forEach(key => {
+        localStorage.removeItem(`bestbuy_bot_${key}`);
+    });
+    showNotification('Configuration cleared! Please refresh the page.', 'info');
+}
+
+// Function to export configuration
+function exportConfiguration() {
+    const config = {};
+    Object.keys(DEFAULT_CONFIG).forEach(key => {
+        config[key] = getConfigValue(key);
+    });
+    
+    const dataStr = JSON.stringify(config, null, 2);
+    const dataBlob = new Blob([dataStr], {type: 'application/json'});
+    
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(dataBlob);
+    link.download = 'bestbuy_bot_config.json';
+    link.click();
+    
+    showNotification('Configuration exported!', 'success');
+}
+
+// Function to import configuration
+function importConfiguration(file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const config = JSON.parse(e.target.result);
+            Object.keys(config).forEach(key => {
+                if (DEFAULT_CONFIG.hasOwnProperty(key)) {
+                    saveConfigValue(key, config[key]);
+                }
+            });
+            showNotification('Configuration imported successfully!', 'success');
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
+        } catch (error) {
+            showNotification('Invalid configuration file!', 'error');
+        }
+    };
+    reader.readAsText(file);
+}
+
+// Initialize configuration system
+checkConfiguration();
+addConfigButton();
