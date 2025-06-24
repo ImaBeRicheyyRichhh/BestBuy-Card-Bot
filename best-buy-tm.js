@@ -3,7 +3,7 @@
 // @include  https://www.bestbuy.com/*
 // @updateURL  https://raw.githubusercontent.com/ImaBeRicheyyRichhh/BestBuy-GottaCatchEmAll-Bot/main/best-buy-tm.js
 // @downloadURL https://raw.githubusercontent.com/ImaBeRicheyyRichhh/BestBuy-GottaCatchEmAll-Bot/main/best-buy-tm.js
-// @version      4.6
+// @version      4.7
 // @description  Best Buy - Gotta Catch Em All - Bot - ImaBeRicheyyRichhh Edition
 // @author       ImaBeRicheyyRichhh
 // @grant        window.close
@@ -64,6 +64,7 @@
 // - Reduced code duplication across event handlers
 // - Added better logging for button state changes
 // 4.6 Added options menu for bestbuy.com
+// 4.7 Sleek Apple-like UI for configuration form
 */
 
 // ==/UserScript==
@@ -1001,23 +1002,24 @@ function createConfigForm() {
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        background: #1a1a1a;
-        border: 2px solid #333;
-        border-radius: 10px;
-        padding: 20px;
+        background: linear-gradient(135deg, #f8fafc 0%, #e9ecef 100%);
+        border: 1px solid #e0e0e0;
+        border-radius: 18px;
+        padding: 32px 32px 24px 32px;
         z-index: 10000;
-        color: white;
-        font-family: Arial, sans-serif;
-        min-width: 400px;
-        box-shadow: 0 0 20px rgba(0,0,0,0.8);
+        color: #222;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+        min-width: 380px;
+        box-shadow: 0 8px 32px rgba(60,60,60,0.12), 0 1.5px 4px rgba(0,0,0,0.04);
+        transition: box-shadow 0.2s;
     `;
 
     const title = document.createElement('h2');
     title.textContent = 'BestBuy Bot Configuration';
-    title.style.cssText = 'margin: 0 0 20px 0; color: #00ff00; text-align: center;';
+    title.style.cssText = 'margin: 0 0 24px 0; color: #222; text-align: center; font-size: 1.5rem; font-weight: 600; letter-spacing: -0.01em;';
 
     const form = document.createElement('form');
-    form.style.cssText = 'display: flex; flex-direction: column; gap: 15px;';
+    form.style.cssText = 'display: flex; flex-direction: column; gap: 18px;';
 
     // Create form fields
     const fields = [
@@ -1066,15 +1068,15 @@ function createConfigForm() {
 
     fields.forEach(field => {
         const fieldContainer = document.createElement('div');
-        fieldContainer.style.cssText = 'display: flex; flex-direction: column; gap: 5px;';
+        fieldContainer.style.cssText = 'display: flex; flex-direction: column; gap: 4px;';
 
         const label = document.createElement('label');
         label.textContent = field.label;
-        label.style.cssText = 'font-weight: bold; color: #00ff00;';
+        label.style.cssText = 'font-weight: 500; color: #222; font-size: 1rem; margin-bottom: 2px; letter-spacing: -0.01em;';
 
         const description = document.createElement('small');
         description.textContent = field.description;
-        description.style.cssText = 'color: #ccc; font-size: 12px;';
+        description.style.cssText = 'color: #888; font-size: 12px; margin-bottom: 2px;';
 
         let input;
         if (field.type === 'select') {
@@ -1092,13 +1094,25 @@ function createConfigForm() {
         }
 
         input.style.cssText = `
-            padding: 8px;
-            border: 1px solid #333;
-            border-radius: 4px;
-            background: #2a2a2a;
-            color: white;
-            font-size: 14px;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            background: #f6f7f9;
+            color: #222;
+            font-size: 1rem;
+            font-family: inherit;
+            outline: none;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+            transition: border-color 0.2s, box-shadow 0.2s;
         `;
+        input.addEventListener('focus', () => {
+            input.style.borderColor = '#007aff';
+            input.style.boxShadow = '0 0 0 2px #b3d7ff';
+        });
+        input.addEventListener('blur', () => {
+            input.style.borderColor = '#d1d5db';
+            input.style.boxShadow = '0 1px 2px rgba(0,0,0,0.03)';
+        });
 
         // Set current value
         const currentValue = getConfigValue(field.name);
@@ -1114,79 +1128,91 @@ function createConfigForm() {
         form.appendChild(fieldContainer);
     });
 
+    // Divider
+    const divider = document.createElement('div');
+    divider.style.cssText = 'height: 1px; background: linear-gradient(90deg, #e0e0e0 0%, #f8fafc 100%); margin: 18px 0 10px 0;';
+    form.appendChild(divider);
+
     // Buttons container
     const buttonContainer = document.createElement('div');
-    buttonContainer.style.cssText = 'display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap;';
+    buttonContainer.style.cssText = 'display: flex; gap: 10px; margin-top: 0; flex-wrap: wrap; justify-content: center;';
 
     const saveButton = document.createElement('button');
     saveButton.textContent = 'Save Configuration';
     saveButton.type = 'submit';
     saveButton.style.cssText = `
         flex: 1;
-        padding: 10px;
-        background: #00ff00;
-        color: black;
-        border: none;
-        border-radius: 4px;
-        font-weight: bold;
+        padding: 10px 0;
+        background: linear-gradient(90deg, #e0e0e0 0%, #f8fafc 100%);
+        color: #222;
+        border: 1px solid #d1d5db;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 1rem;
         cursor: pointer;
         min-width: 120px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+        transition: background 0.2s, border-color 0.2s;
     `;
+    saveButton.addEventListener('mouseover', () => {
+        saveButton.style.background = 'linear-gradient(90deg, #e3e9f1 0%, #e0e0e0 100%)';
+        saveButton.style.borderColor = '#007aff';
+    });
+    saveButton.addEventListener('mouseout', () => {
+        saveButton.style.background = 'linear-gradient(90deg, #e0e0e0 0%, #f8fafc 100%)';
+        saveButton.style.borderColor = '#d1d5db';
+    });
 
     const cancelButton = document.createElement('button');
     cancelButton.textContent = 'Cancel';
     cancelButton.type = 'button';
     cancelButton.style.cssText = `
         flex: 1;
-        padding: 10px;
-        background: #ff4444;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        font-weight: bold;
+        padding: 10px 0;
+        background: #f6f7f9;
+        color: #888;
+        border: 1px solid #e0e0e0;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 1rem;
         cursor: pointer;
         min-width: 120px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+        transition: background 0.2s, border-color 0.2s;
     `;
+    cancelButton.addEventListener('mouseover', () => {
+        cancelButton.style.background = '#e0e0e0';
+        cancelButton.style.borderColor = '#007aff';
+    });
+    cancelButton.addEventListener('mouseout', () => {
+        cancelButton.style.background = '#f6f7f9';
+        cancelButton.style.borderColor = '#e0e0e0';
+    });
 
     const exportButton = document.createElement('button');
     exportButton.textContent = 'Export Config';
     exportButton.type = 'button';
     exportButton.style.cssText = `
         flex: 1;
-        padding: 10px;
-        background: #0066ff;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        font-weight: bold;
+        padding: 10px 0;
+        background: linear-gradient(90deg, #f8fafc 0%, #e0e0e0 100%);
+        color: #007aff;
+        border: 1px solid #d1d5db;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 1rem;
         cursor: pointer;
         min-width: 120px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+        transition: background 0.2s, border-color 0.2s;
     `;
-
-    const clearButton = document.createElement('button');
-    clearButton.textContent = 'Clear Config';
-    clearButton.type = 'button';
-    clearButton.style.cssText = `
-        flex: 1;
-        padding: 10px;
-        background: #ff8800;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        font-weight: bold;
-        cursor: pointer;
-        min-width: 120px;
-    `;
-
-    // Import file input (hidden)
-    const importInput = document.createElement('input');
-    importInput.type = 'file';
-    importInput.accept = '.json';
-    importInput.style.display = 'none';
-    importInput.addEventListener('change', (e) => {
-        if (e.target.files.length > 0) {
-            importConfiguration(e.target.files[0]);
-        }
+    exportButton.addEventListener('mouseover', () => {
+        exportButton.style.background = 'linear-gradient(90deg, #e0e0e0 0%, #f8fafc 100%)';
+        exportButton.style.borderColor = '#007aff';
+    });
+    exportButton.addEventListener('mouseout', () => {
+        exportButton.style.background = 'linear-gradient(90deg, #f8fafc 0%, #e0e0e0 100%)';
+        exportButton.style.borderColor = '#d1d5db';
     });
 
     const importButton = document.createElement('button');
@@ -1194,18 +1220,87 @@ function createConfigForm() {
     importButton.type = 'button';
     importButton.style.cssText = `
         flex: 1;
-        padding: 10px;
-        background: #8800ff;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        font-weight: bold;
+        padding: 10px 0;
+        background: linear-gradient(90deg, #f8fafc 0%, #e0e0e0 100%);
+        color: #6f42c1;
+        border: 1px solid #d1d5db;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 1rem;
         cursor: pointer;
         min-width: 120px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+        transition: background 0.2s, border-color 0.2s;
     `;
-    importButton.addEventListener('click', () => {
-        importInput.click();
+    importButton.addEventListener('mouseover', () => {
+        importButton.style.background = 'linear-gradient(90deg, #e0e0e0 0%, #f8fafc 100%)';
+        importButton.style.borderColor = '#6f42c1';
     });
+    importButton.addEventListener('mouseout', () => {
+        importButton.style.background = 'linear-gradient(90deg, #f8fafc 0%, #e0e0e0 100%)';
+        importButton.style.borderColor = '#d1d5db';
+    });
+
+    const clearButton = document.createElement('button');
+    clearButton.textContent = 'Clear Config';
+    clearButton.type = 'button';
+    clearButton.style.cssText = `
+        flex: 1;
+        padding: 10px 0;
+        background: #fff;
+        color: #ff3b30;
+        border: 1px solid #ffd1d1;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        min-width: 120px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+        transition: background 0.2s, border-color 0.2s;
+    `;
+    clearButton.addEventListener('mouseover', () => {
+        clearButton.style.background = '#ffeaea';
+        clearButton.style.borderColor = '#ff3b30';
+    });
+    clearButton.addEventListener('mouseout', () => {
+        clearButton.style.background = '#fff';
+        clearButton.style.borderColor = '#ffd1d1';
+    });
+
+    // Notification styling
+    // Function to show notifications
+    function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.textContent = message;
+        notification.style.cssText = `
+            position: fixed;
+            top: 32px;
+            right: 32px;
+            padding: 16px 28px;
+            border-radius: 12px;
+            color: #222;
+            font-weight: 600;
+            font-size: 1rem;
+            z-index: 10001;
+            background: ${type === 'success' ? '#e6fbe6' : type === 'error' ? '#ffeaea' : '#f0f4ff'};
+            border: 1px solid ${type === 'success' ? '#b3e6b3' : type === 'error' ? '#ffd1d1' : '#d1e0ff'};
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: opacity 0.2s;
+        `;
+
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.style.opacity = '0';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        document.body.removeChild(notification);
+                    }
+                }, 300);
+            }
+        }, 2500);
+    }
 
     buttonContainer.appendChild(saveButton);
     buttonContainer.appendChild(cancelButton);
@@ -1213,7 +1308,6 @@ function createConfigForm() {
     buttonContainer.appendChild(importButton);
     buttonContainer.appendChild(clearButton);
     form.appendChild(buttonContainer);
-    form.appendChild(importInput);
 
     // Button event handlers
     exportButton.addEventListener('click', exportConfiguration);
@@ -1273,25 +1367,32 @@ function showNotification(message, type = 'info') {
     notification.textContent = message;
     notification.style.cssText = `
         position: fixed;
-        top: 20px;
-        right: 20px;
-        padding: 15px 20px;
-        border-radius: 5px;
-        color: white;
-        font-weight: bold;
+        top: 32px;
+        right: 32px;
+        padding: 16px 28px;
+        border-radius: 12px;
+        color: #222;
+        font-weight: 600;
+        font-size: 1rem;
         z-index: 10001;
-        background: ${type === 'success' ? '#00ff00' : type === 'error' ? '#ff4444' : '#0066ff'};
-        color: ${type === 'success' ? 'black' : 'white'};
-        box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        background: ${type === 'success' ? '#e6fbe6' : type === 'error' ? '#ffeaea' : '#f0f4ff'};
+        border: 1px solid ${type === 'success' ? '#b3e6b3' : type === 'error' ? '#ffd1d1' : '#d1e0ff'};
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        transition: opacity 0.2s;
     `;
 
     document.body.appendChild(notification);
 
     setTimeout(() => {
         if (notification.parentNode) {
-            document.body.removeChild(notification);
+            notification.style.opacity = '0';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    document.body.removeChild(notification);
+                }
+            }, 300);
         }
-    }, 3000);
+    }, 2500);
 }
 
 // Function to check if configuration is needed
